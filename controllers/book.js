@@ -23,11 +23,11 @@ exports.getOneBook = async (req, res, next) => {
 
 exports.getBestBooks = async (req, res, next) => {
      try {
-          const books = await Book.find();
-          const sortedBooks = books.sort(
-               (a, b) => b.averageRating - a.averageRating
-          );
-          const bestBooks = sortedBooks.slice(0, 3);
+          const bestBooks = await Book.aggregate([
+               { $addFields: { ratingsLength: "$ratings.length" } },
+               { $sort: { averageRating: -1, ratingsLength: -1 } },
+               { $limit: 3 },
+          ]);
           res.status(200).json(bestBooks);
      } catch (error) {
           res.status(400).json({ error });
@@ -37,7 +37,6 @@ exports.getBestBooks = async (req, res, next) => {
 exports.createBook = async (req, res, next) => {
      try {
           const bookObject = JSON.parse(req.body.book);
-          delete bookObject.userId;
           const bookRatings =
                bookObject.ratings[0].grade > 0
                     ? [
@@ -47,7 +46,6 @@ exports.createBook = async (req, res, next) => {
                            },
                       ]
                     : [];
-          delete bookObject.ratings;
           const book = new Book({
                ...bookObject,
                userId: req.auth.userId,
@@ -74,27 +72,22 @@ exports.modifyBook = async (req, res, next) => {
                     message: "Vous n'êtes pas autorisé à modifier ce livre",
                });
           } else {
-               if (!req.file) {
-                    const update = req.body;
-                    await Book.findByIdAndUpdate(bookId, update);
-                    res.status(200).json({
-                         message: "Livre mis à jour avec succès",
-                    });
-               } else {
-                    const update = JSON.parse(req.body.book);
-                    delete update.userId;
+               const body = req.file ? JSON.parse(req.body.book) : req.body;
+               const { userId, ratings, averageRating, imageUrl, ...update } =
+                    body;
+               if (req.file) {
                     update.imageUrl = `${req.protocol}://${req.get(
                          "host"
                     )}/images/${req.file.filename}`;
-                    fs.unlink(
+                    await fs.unlink(
                          "images" + book.imageUrl.split("images")[1],
                          () => {}
                     );
-                    await Book.findByIdAndUpdate(bookId, update);
-                    res.status(200).json({
-                         message: "Livre mis à jour avec succès",
-                    });
                }
+               await Book.findByIdAndUpdate(bookId, update);
+               res.status(200).json({
+                    message: "Livre mis à jour avec succès",
+               });
           }
      } catch (error) {
           res.status(400).json({ error });
