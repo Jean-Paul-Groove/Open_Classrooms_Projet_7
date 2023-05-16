@@ -11,7 +11,7 @@ const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
      const extension = MIME_TYPES[file.mimetype];
      if (!extension) {
-          return cb(null, false);
+          return cb(new Error("Ce type de fichier n'est pas accepté"), false);
      } else {
           return cb(null, true);
      }
