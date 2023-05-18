@@ -84,7 +84,6 @@ exports.modifyBook = async (req, res, next) => {
                          () => {}
                     );
                }
-               console.log(update);
                await Book.findByIdAndUpdate(bookId, update);
                res.status(200).json({
                     message: "Livre mis à jour avec succès",

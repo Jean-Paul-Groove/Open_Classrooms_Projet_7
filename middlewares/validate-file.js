@@ -1,4 +1,4 @@
-const multer = require("multer");
+const validateFile = require("multer");
 
 const MIME_TYPES = {
      "image/jpg": "jpg",
@@ -7,7 +7,7 @@ const MIME_TYPES = {
      "image/webp": "webp",
 };
 
-const storage = multer.memoryStorage();
+const storage = validateFile.memoryStorage();
 const fileFilter = (req, file, cb) => {
      const extension = MIME_TYPES[file.mimetype];
      if (!extension) {
@@ -18,4 +18,4 @@ const fileFilter = (req, file, cb) => {
 };
 const limits = { fileSize: 4000000 };
 
-module.exports = multer({ storage, fileFilter, limits }).single("image");
+module.exports = validateFile({ storage, fileFilter, limits }).single("image");
