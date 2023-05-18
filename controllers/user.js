@@ -1,8 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const auth = require("../middlewares/auth");
-const jwtSecret = auth.jwtSecret();
 
 exports.signup = async (req, res, next) => {
      try {
@@ -34,9 +32,14 @@ exports.login = async (req, res, next) => {
                } else {
                     res.status(200).json({
                          userId: user._id,
-                         token: jwt.sign({ userId: user._id }, jwtSecret, {
-                              expiresIn: "24h",
-                         }),
+                         token: jwt.sign(
+                              { userId: user._id },
+                              process.env.JSON_WEB_TOKEN_SECRET,
+                              {
+                                   expiresIn:
+                                        process.env.JSON_WEB_TOKEN_EXPIRATION,
+                              }
+                         ),
                     });
                }
           }

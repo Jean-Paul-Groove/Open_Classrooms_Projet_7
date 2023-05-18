@@ -4,6 +4,7 @@ const path = require("path");
 const userRoutes = require("./routes/user");
 const bookRoutes = require("./routes/book");
 const app = express();
+require("dotenv").config();
 
 app.use((req, res, next) => {
      res.setHeader("Access-Control-Allow-Origin", "*");
@@ -25,7 +26,7 @@ app.use("/api/auth", userRoutes);
 async function connect() {
      try {
           await mongoose.connect(
-               "mongodb+srv://jpgroove:test@cluster0.co9mvvb.mongodb.net/?retryWrites=true&w=majority",
+               `mongodb+srv://${process.env.MONGO_USER_NAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_CONNECT_PATH}`,
                { useNewUrlParser: true, useUnifiedTopology: true }
           );
           console.log("Connexion à MongoDB réussie !");
