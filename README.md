@@ -8,9 +8,13 @@ Application utilisant Node.js et Express liée à une base de donnée Mongo DB
 ## Fonctionnalités
 
 Système d'authentification des utilisateurs.
+
 Ajout de livres à la base de donnée par les utilisateurs.
+
 Modification des livres par les utilisateurs les ayant précédemment ajouté.
+
 Suppression des livres par les utilisateurs les ayant précédemment ajouté.
+
 Gestion des notations des livres.
 
 ## Comment lancer le projet ?
