@@ -1,4 +1,3 @@
-const { json } = require("express");
 const Book = require("../models/Book");
 const fs = require("fs");
 
